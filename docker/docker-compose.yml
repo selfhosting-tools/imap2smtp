@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+
+  imap2smtp:
+    container_name: imap2smtp
+    restart: always
+    build:
+      context: imap2smtp
+      dockerfile: docker/Dockerfile
+    image: imap2smtp:latest
+    volumes:
+      - ./config:/config:ro
