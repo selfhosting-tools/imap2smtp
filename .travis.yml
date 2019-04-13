@@ -12,6 +12,7 @@ cache:
 
 install:
   - pip install -r requirements.txt
+  - pip install pylint pycodestyle  # requirements only for CI
   - docker build -t imap2smtp:latest -f docker/Dockerfile .
 
 script:
