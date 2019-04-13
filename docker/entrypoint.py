@@ -11,7 +11,7 @@ from time import sleep
 
 from imap2smtp import Imap2Smtp
 
-config_directory = '../config'
+config_directory = '/config'
 
 
 # Basic logging
