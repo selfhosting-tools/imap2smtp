@@ -1,5 +1,7 @@
 # IMAP to SMTP forwarder
 
+[![Build Status](https://travis-ci.org/selfhosting-tools/imap2smtp.svg?branch=master)](https://travis-ci.org/selfhosting-tools/imap2smtp)
+
 This tools helps to gather emails from various IMAP servers to one mailbox.
 It uses an SMTP server to send gathered emails to one mailbox.
 
