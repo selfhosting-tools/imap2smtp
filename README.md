@@ -33,7 +33,7 @@ python3 imap2smtp.py -c config.yaml
 
 ## Docker usage
 As it is security sensitive (e.g. IMAP/SMTP passwords), I do not recommend to use an image from Docker Hub.
-Building is really simple and should be done locally (ideally after checking GPG commit signature).
+Building is really simple and should be done locally (ideally after [checking GPG commit signature](https://github.com/selfhosting-tools/master-keys)).
 ```bash
 git clone --depth 1 https://github.com/selfhosting-tools/imap2smtp.git
 git -C imap2smtp verify-commit HEAD
