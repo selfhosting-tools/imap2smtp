@@ -31,11 +31,25 @@ class Imap2Smtp(threading.Thread):
         # Init from mother class
         threading.Thread.__init__(self)
 
+        # Set up logger
+        self.log = logging.getLogger(config_path)
+        self.log.setLevel(logging.INFO)
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(
+            logging.Formatter(
+                fmt="[{}] %(asctime)s:%(levelname)s:%(message)s".format(
+                    config_path
+                ),
+                datefmt='%Y-%m-%d %H:%M:%S'
+            )
+        )
+        self.log.addHandler(stream_handler)
+
         # Initialize vars
         self.config_path = config_path
         self.config = None
-        self.log = None
-        self.exit_event = None
+        # exit event: exit when set
+        self.exit_event = threading.Event()
         self.imap = None
         self.smtp = None
 
@@ -51,25 +65,11 @@ class Imap2Smtp(threading.Thread):
         else:
             raise Exception('Path to config is required')
 
-        # Set up logger
-        self.log = logging.getLogger(self.config_path)
+        # Set up loglevel
         self.log.setLevel(
             logging.DEBUG if self.config['common'].get('debug', False)
             else logging.INFO
         )
-        stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(
-            logging.Formatter(
-                fmt="[{}] %(asctime)s:%(levelname)s:%(message)s".format(
-                    self.config_path
-                ),
-                datefmt='%Y-%m-%d %H:%M:%S'
-            )
-        )
-        self.log.addHandler(stream_handler)
-
-        # exit event: exit when set
-        self.exit_event = threading.Event()
 
         config_sleep = self.config['common'].get('sleep', None)
         while not self.exit_event.is_set():
