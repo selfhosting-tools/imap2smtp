@@ -1,6 +1,6 @@
 FROM python:3.7-alpine
 
-RUN apk add --no-cache git curl gnupg
+RUN apk add --no-cache git curl gnupg tzdata
 
 RUN cd / && git clone --depth 1 https://github.com/selfhosting-tools/imap2smtp.git
 
