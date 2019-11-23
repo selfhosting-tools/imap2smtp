@@ -80,7 +80,7 @@ class Imap2Smtp(threading.Thread):
             )
 
             if config_sleep is None:
-                exit(not success)  # 0 on success
+                sys_exit(not success)  # 0 on success
 
             # Try again after 10s if case of error
             if not success:
