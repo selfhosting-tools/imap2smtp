@@ -22,3 +22,7 @@ script:
   - pycodestyle imap2smtp.py docker/entrypoint.py
   # - python -m unittest discover tests -v
   # - docker run --rm -it --entrypoint python imap2smtp:latest -m unittest discover tests -v
+
+after_success:
+  - echo $DOCKER_PASS | docker login -u selfhostingtools --password-stdin
+  - docker push selfhostingtools/imap2smtp:latest
