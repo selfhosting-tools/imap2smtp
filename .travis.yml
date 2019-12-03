@@ -15,13 +15,13 @@ cache:
 install:
   - pip install -r requirements.txt
   - pip install pylint pycodestyle  # requirements only for CI
-  - docker build -t imap2smtp:latest -f docker/Dockerfile .
+  - docker build -t selfhostingtools/imap2smtp:latest -f docker/Dockerfile .
 
 script:
   - pylint --rcfile=.pylintrc imap2smtp.py docker/entrypoint.py
   - pycodestyle imap2smtp.py docker/entrypoint.py
   # - python -m unittest discover tests -v
-  # - docker run --rm -it --entrypoint python imap2smtp:latest -m unittest discover tests -v
+  # - docker run --rm -it --entrypoint python selfhostingtools/imap2smtp:latest -m unittest discover tests -v
 
 after_success:
   - echo $DOCKER_PASS | docker login -u selfhostingtools --password-stdin
