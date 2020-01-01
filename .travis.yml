@@ -5,6 +5,7 @@ python:
   - "3.5"
   - "3.6"
   - "3.7"
+  - "3.8"
 
 services:
   - docker
@@ -13,19 +14,22 @@ cache:
   - pip
 
 install:
+  - mkdir -p $HOME/bin
+  - curl -sL -o $HOME/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.17.3/hadolint-Linux-x86_64 && chmod 755 $HOME/bin/hadolint
+  - export PATH=$PATH:$HOME/bin
   - pip install -r requirements.txt
-  - pip install pylint pycodestyle  # requirements only for CI
+  - pip install pylama  # only for CI
   - docker build -t selfhostingtools/imap2smtp:latest -f docker/Dockerfile .
 
 script:
-  - pylint --rcfile=.pylintrc imap2smtp.py docker/entrypoint.py
-  - pycodestyle imap2smtp.py docker/entrypoint.py
-  # - python -m unittest discover tests -v
-  # - docker run --rm -it --entrypoint python selfhostingtools/imap2smtp:latest -m unittest discover tests -v
+  - pylama -v imap2smtp.py docker/entrypoint.py
+  - hadolint docker/Dockerfile
 
-after_success:
-  - echo $DOCKER_PASS | docker login -u selfhostingtools --password-stdin
-  - docker push selfhostingtools/imap2smtp:latest
+deploy:
+  provider: script
+  script: echo $DOCKER_PASS | docker login -u selfhostingtools --password-stdin && docker push selfhostingtools/imap2smtp:latest
+  on:
+    branch: master
 
 notifications:
   email:
