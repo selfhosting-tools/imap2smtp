@@ -161,17 +161,26 @@ class Imap2Smtp(threading.Thread):
                     imap_config.get('mark_as_seen', False),
                 )
             else:
-                counter_failure +=1 
+                counter_failure += 1
                 self.log.error("Failed to forward message %s", msg_id)
                 if smtp_error_code >= 500:
-                    self.log.error("SMTP error code: %d => permanent error", smtp_error_code)
+                    self.log.error(
+                        "SMTP error code: %d => permanent error",
+                        smtp_error_code
+                    )
                     self.postprocess_message(
                         msg_id,
-                        move_to_mailbox=imap_config.get('move_to_mailbox_failed', None),
+                        destination_mailbox=imap_config.get(
+                            'move_to_mailbox_failed',
+                            None
+                        ),
                         mark_as_seen=False,
                     )
                 else:
-                    self.log.error("SMTP error code: %d => temporary error", smtp_error_code)
+                    self.log.error(
+                        "SMTP error code: %d => temporary error",
+                        smtp_error_code
+                    )
 
         self.imap.expunge()
         self.close()
@@ -387,7 +396,7 @@ class Imap2Smtp(threading.Thread):
             self.log.debug("Message sent")
         except OSError as smtp_exception:
             self.log.exception(smtp_exception)
-            return False, smtp_exception[to_addr][0]
+            return False, smtp_exception.errno
         return True, None
 
     def close(self):
