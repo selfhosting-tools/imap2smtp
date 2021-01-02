@@ -1,21 +1,20 @@
 # IMAP to SMTP forwarder
 
-[![Build Status](https://travis-ci.org/selfhosting-tools/imap2smtp.svg?branch=master)](https://travis-ci.org/selfhosting-tools/imap2smtp)
+![main](https://github.com/selfhosting-tools/imap2smtp/workflows/main/badge.svg?branch=master)
+[![Project Status: WIP  Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![Docker Hub](https://img.shields.io/docker/pulls/selfhostingtools/imap2smtp.svg)](https://hub.docker.com/r/selfhostingtools/imap2smtp)
 
 This tools helps to gather emails from various IMAP servers to one mailbox.
 It uses an SMTP server to send gathered emails to one mailbox.
 
 'From' header of emails won't be modified (transparent forwarding).
-Pay attention that transparent forwarding breaks SPF check.
+Pay attention that transparent forwarding breaks SPF check (but not DKIM).
 
 This is especially useful if your provider prevents you from forwarding your emails.
 
 This tool uses almost only built-in libraries (except PyYAML) and should works on any Python 3.4+
 
 Feel free to open issue or PR.
-
-TODO:
-- Unittest-based tests (see 'tests' branch for progress).
 
 Author: FL42
 
@@ -32,7 +31,7 @@ python3 imap2smtp.py -c config.yaml
 
 
 ## Docker usage
-As it is security sensitive (e.g. IMAP/SMTP passwords), I do not recommend to use an image from Docker Hub.
+As it is security sensitive (e.g. IMAP/SMTP passwords), I do not recommend to use an [image from Docker Hub](https://hub.docker.com/r/selfhostingtools/imap2smtp).
 Building is really simple and should be done locally (ideally after [checking GPG commit signature](https://github.com/selfhosting-tools/master-keys)).
 ```bash
 git clone --depth 1 https://github.com/selfhosting-tools/imap2smtp.git
@@ -71,6 +70,7 @@ All sections are required (even if there are empty).
 - mailbox: (str) mailbox name to check for emails to forward. Default to `'INBOX'`.
 - mark_as_seen: (bool) mark forwarded emails as seen. Default to `false`.
 - move_to_mailbox: (str) move forwarded emails to different mailbox (on the same IMAP server) after forwarding (e.g. 'Fowarded emails'). Remove or set to `null` to disable. Default to `null`
+- move_to_mailbox_failed: (str) move emails whose transfer failed permanently (smtp code >= 500) to different mailbox (on the same IMAP server) (e.g. 'Failed forwarding'). Remove or set to `null` to disable. Default to `null`
 
 ### smtp section
 - host: (str) hostname of the SMTP server
