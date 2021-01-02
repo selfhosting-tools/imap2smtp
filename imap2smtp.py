@@ -180,7 +180,7 @@ class Imap2Smtp(threading.Thread):
                             None
                         ),
                         mark_as_seen=False,
-                    )     
+                    )
 
         self.imap.expunge()
         self.close()
