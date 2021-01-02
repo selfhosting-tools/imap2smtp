@@ -1,6 +1,7 @@
 common:
   debug: true
   sleep: 300
+  sleep_var_pct: 50
 
 imap:
   host: imap.example.com

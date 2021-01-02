@@ -60,6 +60,7 @@ All sections are required (even if there are empty).
   Exit code is 1 if forwarding failed, else 0.
   - (str) 'auto': wait 5 mins during the day (7 am to 9 pm) and 30 mins during the night between 2 checks for new emails to forward
   - (int) constant time to sleep between 2 checks for new emails to forward
+- sleep_var_pct: (int in %) Allow sleep time to vary uniformly in [(100-sleep_var_pct)/100 * sleep; (100+sleep_var_pct)/100 * sleep]
 
 ### imap section
 - host: (str) hostname of the IMAP server

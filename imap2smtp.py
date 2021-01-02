@@ -13,6 +13,7 @@ import signal
 import smtplib
 import threading
 from datetime import datetime
+from random import random
 from sys import exit as sys_exit
 from time import sleep
 
@@ -72,6 +73,7 @@ class Imap2Smtp(threading.Thread):
         )
 
         config_sleep = self.config['common'].get('sleep', None)
+        sleep_var_pct = self.config['common'].get('sleep_var_pct', None)
         while not self.exit_event.is_set():
 
             success = self.forward(
@@ -95,7 +97,17 @@ class Imap2Smtp(threading.Thread):
                     sleep_time = 1800
             else:
                 sleep_time = config_sleep
-            self.log.debug("Waiting %d seconds...", sleep_time)
+
+            if sleep_var_pct:
+                random_delta = \
+                    (2*random() - 1.0) * (sleep_var_pct / 100) * sleep_time
+                self.log.debug(
+                    "Adding %.2f seconds for randomness",
+                    random_delta
+                )
+                sleep_time += random_delta
+
+            self.log.debug("Waiting %.2f seconds...", sleep_time)
             self.exit_event.wait(sleep_time)
         self.log.info("Exited")
 
