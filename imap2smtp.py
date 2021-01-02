@@ -107,7 +107,7 @@ class Imap2Smtp(threading.Thread):
 
         self.imap = self.imap_login(imap_config)
         if self.imap is not None:
-            self.log.info("IMAP logged")
+            self.log.debug("IMAP logged")
         else:
             self.log.error("IMAP failed")
             return False
@@ -126,7 +126,7 @@ class Imap2Smtp(threading.Thread):
             if self.smtp is None:
                 self.smtp = self.setup_smtp(smtp_config)
                 if self.smtp is not None:
-                    self.log.info("SMTP logged")
+                    self.log.debug("SMTP logged")
                 else:
                     self.log.error("SMTP failed")
                     return False
@@ -163,7 +163,12 @@ class Imap2Smtp(threading.Thread):
             else:
                 counter_failure += 1
                 self.log.error("Failed to forward message %s", msg_id)
-                if smtp_error_code >= 500:
+                if not smtp_error_code or smtp_error_code < 500:
+                    self.log.error(
+                        "SMTP error code: %d => temporary error",
+                        smtp_error_code
+                    )
+                else:
                     self.log.error(
                         "SMTP error code: %d => permanent error",
                         smtp_error_code
@@ -175,12 +180,7 @@ class Imap2Smtp(threading.Thread):
                             None
                         ),
                         mark_as_seen=False,
-                    )
-                else:
-                    self.log.error(
-                        "SMTP error code: %d => temporary error",
-                        smtp_error_code
-                    )
+                    )     
 
         self.imap.expunge()
         self.close()
@@ -394,9 +394,16 @@ class Imap2Smtp(threading.Thread):
                 to_addrs=to_addr
             )
             self.log.debug("Message sent")
-        except OSError as smtp_exception:
-            self.log.exception(smtp_exception)
-            return False, smtp_exception.errno
+        except smtplib.SMTPRecipientsRefused as smtp_exception:
+            self.log.exception()
+            return False, smtp_exception.recipients[to_addr][0]
+        except smtplib.SMTPResponseException as smtp_exception:
+            self.log.exception()
+            return False, smtp_exception.smtp_code
+        except smtplib.SMTPException as smtp_exception:
+            self.log.exception()
+        except (OSError, IOError):
+            self.log.exception()
         return True, None
 
     def close(self):
