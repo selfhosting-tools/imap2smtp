@@ -132,7 +132,8 @@ class Imap2Smtp(threading.Thread):
             return False
 
         counter_success = 0
-        counter_failure = 0
+        counter_failure_temp = 0
+        counter_failure_perm = 0
         for msg_id in message_list:
             # Open connection to SMTP server (first time)
             if self.smtp is None:
@@ -173,18 +174,19 @@ class Imap2Smtp(threading.Thread):
                     imap_config.get('mark_as_seen', False),
                 )
             else:
-                counter_failure += 1
                 self.log.error("Failed to forward message %s", msg_id)
                 if not smtp_error_code or smtp_error_code < 500:
                     self.log.error(
                         "SMTP error code: %d => temporary error",
                         smtp_error_code
                     )
+                    counter_failure_temp += 1
                 else:
                     self.log.error(
                         "SMTP error code: %d => permanent error",
                         smtp_error_code
                     )
+                    counter_failure_perm += 1
                     self.postprocess_message(
                         msg_id,
                         destination_mailbox=imap_config.get(
@@ -196,11 +198,13 @@ class Imap2Smtp(threading.Thread):
 
         self.imap.expunge()
         self.close()
-        self.log.info(
-            "stats: to=%s forward_success=%d forward_failure=%d",
-            self.config['smtp']['forward_address'],
-            counter_success,
-            counter_failure
+        # Use print() to have fully logfmt compliant line (no prefix)
+        print(
+            "type=stats "
+            f"to={self.config['smtp']['forward_address']} "
+            f"forward_success={counter_success} "
+            f"forward_failure_temp={counter_failure_temp} "
+            f"forward_failure_perm={counter_failure_perm}"
         )
         return True
 
