@@ -118,7 +118,9 @@ class Imap2Smtp(threading.Thread):
         if message_list is None:
             self.log.error("Failed to get list of message")
             return False
-        counter = 0
+
+        counter_success = 0
+        counter_failure = 0
         for msg_id in message_list:
             # Open connection to SMTP server (first time)
             if self.smtp is None:
@@ -146,26 +148,39 @@ class Imap2Smtp(threading.Thread):
                 msg['Date']
             )
 
-            message_forwarded = self.send_message(
+            message_forwarded, smtp_error_code = self.send_message(
                 msg=msg,
                 to_addr=self.config['smtp']['forward_address']
             )
 
             if message_forwarded:
-                counter += 1
-                success = self.postprocess_message(
+                counter_success += 1
+                self.postprocess_message(
                     msg_id,
                     imap_config.get('move_to_mailbox', None),
                     imap_config.get('mark_as_seen', False),
                 )
-                if not success:
-                    self.log.error("Fail to postprocess message %s", msg_id)
             else:
+                counter_failure +=1 
                 self.log.error("Failed to forward message %s", msg_id)
+                if smtp_error_code >= 500:
+                    self.log.error("SMTP error code: %d => permanent error", smtp_error_code)
+                    self.postprocess_message(
+                        msg_id,
+                        move_to_mailbox=imap_config.get('move_to_mailbox_failed', None),
+                        mark_as_seen=False,
+                    )
+                else:
+                    self.log.error("SMTP error code: %d => temporary error", smtp_error_code)
 
         self.imap.expunge()
         self.close()
-        self.log.info("Done: %d mails forwarded", counter)
+        self.log.info(
+            "stats: to=%s forward_success=%d forward_failure=%d",
+            self.config['smtp']['forward_address'],
+            counter_success,
+            counter_failure
+        )
         return True
 
     def imap_login(self, imap_config):
@@ -361,7 +376,7 @@ class Imap2Smtp(threading.Thread):
         to_addr: (str) destination address
 
         Return:
-        (bool) Message sent
+        (bool) Message sent, (int) error code or None
         """
 
         try:
@@ -372,8 +387,8 @@ class Imap2Smtp(threading.Thread):
             self.log.debug("Message sent")
         except OSError as smtp_exception:
             self.log.exception(smtp_exception)
-            return False
-        return True
+            return False, smtp_exception[to_addr][0]
+        return True, None
 
     def close(self):
         """

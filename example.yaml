@@ -9,6 +9,7 @@ imap:
   password: password
   mailbox: INBOX
   move_to_mailbox: forwarded
+  move_to_mailbox_failed: failed
   mark_as_seen: true
 
 smtp:
