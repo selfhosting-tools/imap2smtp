@@ -395,15 +395,15 @@ class Imap2Smtp(threading.Thread):
             )
             self.log.debug("Message sent")
         except smtplib.SMTPRecipientsRefused as smtp_exception:
-            self.log.exception()
+            self.log.exception(smtp_exception)
             return False, smtp_exception.recipients[to_addr][0]
         except smtplib.SMTPResponseException as smtp_exception:
-            self.log.exception()
+            self.log.exception(smtp_exception)
             return False, smtp_exception.smtp_code
         except smtplib.SMTPException as smtp_exception:
-            self.log.exception()
-        except (OSError, IOError):
-            self.log.exception()
+            self.log.exception(smtp_exception)
+        except (OSError, IOError) as os_exception:
+            self.log.exception(os_exception)
         return True, None
 
     def close(self):
