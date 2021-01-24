@@ -76,12 +76,15 @@ class Imap2Smtp(threading.Thread):
         sleep_var_pct = self.config['common'].get('sleep_var_pct', None)
         while not self.exit_event.is_set():
 
-            success = self.forward(
-                imap_config=self.config['imap'],
-                smtp_config=self.config['smtp']
-            )
+            try:
+                success = self.forward(
+                    imap_config=self.config['imap'],
+                    smtp_config=self.config['smtp']
+                )
+            except Exception:
+                self.log.exception("Exception raised during forward()")
 
-            if config_sleep is None:
+            if config_sleep is None:  # Run only once
                 sys_exit(not success)  # 0 on success
 
             # Try again after 10s if case of error
