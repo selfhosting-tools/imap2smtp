@@ -112,3 +112,7 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# don't commit config files which might have passwords
+config.yaml
+/config/
