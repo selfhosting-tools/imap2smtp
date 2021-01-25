@@ -39,10 +39,10 @@ git -C imap2smtp verify-commit HEAD
 cp imap2smtp/docker/docker-compose.yaml .
 docker-compose build
 ```
-Patch `docker-compose.yaml` to your own path for config directory if needed (default to ./config).  
+Patch `docker-compose.yaml` to your own path for config directory if needed (default to ./config).
 Put your config files in your config directory.
-You should set strict permissions to your config files (i.e. owned by root and chmod 600).  
-All config files in the config directory will be run in parallel.  
+You should set strict permissions to your config files (i.e. owned by root and chmod 600).
+All config files in the config directory will be run in parallel.
 Finally start the container:
 ```bash
 docker-compose up -d
@@ -50,7 +50,7 @@ docker-compose up -d
 
 
 ## Configuration file format
-See `example.yaml`.  
+See `example.yaml`.
 All sections are required (even if there are empty).
 
 ### common section
@@ -72,6 +72,7 @@ All sections are required (even if there are empty).
 - mark_as_seen: (bool) mark forwarded emails as seen. Default to `false`.
 - move_to_mailbox: (str) move forwarded emails to different mailbox (on the same IMAP server) after forwarding (e.g. 'Fowarded emails'). Remove or set to `null` to disable. Default to `null`
 - move_to_mailbox_failed: (str) move emails whose transfer failed permanently (smtp code >= 500) to different mailbox (on the same IMAP server) (e.g. 'Failed forwarding'). Remove or set to `null` to disable. Default to `null`
+- since: (str) Will only forward messages after this date. e.g. 1-Jan-2021 will only forward messages received after Jan 1st 2021.
 
 ### smtp section
 - host: (str) hostname of the SMTP server

@@ -129,7 +129,11 @@ class Imap2Smtp(threading.Thread):
         self.smtp = None  # SMTP will be open if there are messages to forward
 
         mailbox = imap_config.get('mailbox', 'INBOX')
-        message_list = self.get_message_list(mailbox)
+        if imap_config.get('since'):
+            criterion = '(SINCE "{}")'.format(imap_config.get('since'))
+        else:
+            criterion = None
+        message_list = self.get_message_list(mailbox, criterion)
         if message_list is None:
             self.log.error("Failed to get list of message")
             return False
@@ -262,7 +266,7 @@ class Imap2Smtp(threading.Thread):
             self.log.exception(imap_exception)
             return None
 
-    def get_message_list(self, mailbox):
+    def get_message_list(self, mailbox, criterion):
         """
         Get list of message ID in 'mailbox'
 
@@ -281,7 +285,7 @@ class Imap2Smtp(threading.Thread):
                 self.log.error("Failed to select '%s': %s", mailbox, data)
                 return None
 
-            typ, data = self.imap.search(None, 'ALL')
+            typ, data = self.imap.search(None, criterion or 'ALL')
             if typ == 'OK':
                 self.log.debug("IMAP search on 'ALL' succeeded")
             else:
@@ -467,9 +471,5 @@ if __name__ == '__main__':
         config_path=args.config
     )
     imap2smtp.start()
-
-    while True:
-        if not imap2smtp.is_alive():
-            break
-        sleep(600)
-    sys_exit(1)
+    imap2smtp.join()
+    sys_exit(0)

@@ -12,6 +12,7 @@ imap:
   move_to_mailbox: forwarded
   move_to_mailbox_failed: failed
   mark_as_seen: true
+  since: null # e.g. "01-Jan-2021"
 
 smtp:
   host: smtp.example.com
