@@ -25,6 +25,10 @@ stream_handler.setFormatter(
     )
 )
 log.addHandler(stream_handler)
+log.warning(
+    "This image is DEPRECATED. "
+    "See https://github.com/selfhosting-tools/imap2smtp"
+)
 
 
 # Stop threads and exit

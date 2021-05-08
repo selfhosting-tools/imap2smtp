@@ -1,8 +1,8 @@
 # IMAP to SMTP forwarder
 
-![main](https://github.com/selfhosting-tools/imap2smtp/workflows/main/badge.svg?branch=master)
-[![Project Status: WIP  Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
-[![Docker Hub](https://img.shields.io/docker/pulls/selfhostingtools/imap2smtp.svg)](https://hub.docker.com/r/selfhostingtools/imap2smtp)
+[![Project Status: Abandoned – Initial development has started, but there has not yet been a stable, usable release; the project has been abandoned and the author(s) do not intend on continuing development.](https://www.repostatus.org/badges/latest/abandoned.svg)](https://www.repostatus.org/#abandoned)
+
+:warning: **DEPRECATED** See [Imap2Imap](https://github.com/The-Kube-Way/imap2imap) for a better solution
 
 This tools helps to gather emails from various IMAP servers to one mailbox.
 It uses an SMTP server to send gathered emails to one mailbox.
